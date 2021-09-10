@@ -34,7 +34,7 @@
 		<exec_method type='method' name='refresh' exec='/lib/svc/method/svc-lmsd refresh' timeout_seconds='60' />
 
 		<property_group name='lmsd' type='application'>
-                        <propval name='bindir' type='astring' value='/opt/lms-8.3.0' /> 
+                        <propval name='bindir' type='astring' value='/opt/logitechmediaserver' /> 
 			<propval name='perlbin' type='astring' value='/usr/bin/perl' />
                         <propval name='cachedir' type='astring' value='/var/lib/logitechmediaserver/cache' />
 			<propval name='prefsdir' type='astring' value='/var/lib/logitechmediaserver/prefs' />
