@@ -16,7 +16,7 @@
      @par=split(/ /,$ant);
      if ($par[3]=~/^11\./i) {
        print "\n"x20;
-       print "This proftpd installer is running on Illumos based systems only.\nOn Solaris 11 use the default Proftpd\n\n";
+       print "This installer is running on Illumos based systems only.\nOn Solaris 11\n\n";
        exit;
      }
 
@@ -59,7 +59,8 @@ chomp($t);        # remove newline
       print "\n"x20;
       print "***************************************************************************\n\n";
       print "**    Setup napp-it addon logitechmediaserver                            **\n";
-      print "**    intended for OmniOS not on Solaris 11                              **\n\n";
+      print "**    intended for OmniOS not on Solaris 11                              **\n";     
+      print "**    currently only omnios r151038 with perl 5.32.1 is supported        **\n\n";
       print "***************************************************************************\n\n\n";
       print "*  \n";
       sleep(3);
@@ -80,7 +81,6 @@ print "\n"x40;
     
     print "installing needed packages\n";
     `pkg install --deny-new-be git`;
-    `pkg install --deny-new-be rsync`;
 
 
 #############################
