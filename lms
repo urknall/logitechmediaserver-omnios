@@ -1,15 +1,13 @@
 #!/usr/bin/perl
 ## nappit add-on logitechmediaserver
-## 09/2021, install script from urknall
-
+## Okt. 2021, script by urknall
 ############
-## setup lms (Logitechmediaserver)
+## setup logitechmediaserver
 ##
 ####################################################################################
-# At the moment only OmniOS CE r151038 with perl 5.32.1 is supported
+#
 #
 ####################################################################################
-
 
 ####################
 # not on Solaris  11, included
@@ -18,7 +16,7 @@
      @par=split(/ /,$ant);
      if ($par[3]=~/^11\./i) {
        print "\n"x20;
-       print "This lms installer is running on Illumos based systems only.\n\n";
+       print "This proftpd installer is running on Illumos based systems only.\nOn Solaris 11 use the default Proftpd\n\n";
        exit;
      }
 
@@ -60,11 +58,8 @@ chomp($t);        # remove newline
 
       print "\n"x20;
       print "***************************************************************************\n\n";
-      print "**    Setup Nappit Logitechmediaserver Addon - 09/2021                    **\n";
-      print "**    intended for OmniOS                                                 **\n\n";
-      print "***************************************************************************\n\n";
-      print "** Actions ():                                     \n";
-      print "**                                                 **\n";
+      print "**    Setup napp-it addon logitechmediaserver                            **\n";
+      print "**    intended for OmniOS not on Solaris 11                              **\n\n";
       print "***************************************************************************\n\n\n";
       print "*  \n";
       sleep(3);
@@ -81,43 +76,38 @@ print "\n"x40;
 
     # create BE pre setup
     $t=time();
-    `beadm create pre_lms_setup_$LMSVERSION`;
+    `beadm create pre_logitechmediaserver`;
+    
+    print "installing needed packages\n";
+    `pkg install --deny-new-be git`;
+    `pkg install --deny-new-be rsync`;
+
 
 #############################
-## step 1: Install packages
+## step 2: Install lms
 #############################
 
+    print "installing logitechmediaserver\n";
+    `git clone https://github.com/urknall/logitechmediaserver-omnios.git logitechmediaserver-omnios.git`;
+    `cd logitechmediaserver-omnios.git/logitechmediaserver`;
+    `mkdir /opt/logitechmediaserver`;
+    `cp -r * /opt/logitechmediaserver`;
+    `cd ..`;
 
-echo "### Installing needed packages
-`pkg install --deny-new-be git`;
-`pkg install --deny-new-be rsync`;
+    `useradd -c 'lmsd' -d /var/empty -s /bin/false lmsd`;
+    `groupadd lmsd`;
+    `chown -R lmsd:lmsd /opt/logitechmediaserver`;
+    `chmod -R 755 /opt/logitechmediaserver`;
+    `mkdir /var/lib/logitechmediaserver`;
+    `chown lmsd:lmsd /var/lib/logitechmediaserver`;
+    `chmod 755 /var/lib/logitechmediaserver`;
 
-#############################
-## step 2: Install LMS
-#############################
-echo "### Installing Logitechmediaserver
-
-
-`git clone https://github.com/urknall/logitechmediaserver-omnios.git logitechmediaserver-omnios.git`;
-`cd logitechmediaserver-omnios.git/logitechmediaserver`;
-`mkdir /opt/logitechmediaserver`;
-`cp -r * /opt/logitechmediaserver`;
-`cd ..`;
-
-`useradd -c 'lmsd' -d /var/empty -s /bin/false lmsd`;
-`groupadd lmsd`;
-`chown -R lmsd:lmsd /opt/logitechmediaserver`;
-`chmod -R 755 /opt/logitechmediaserver`;
-`mkdir /var/lib/logitechmediaserver`;
-`chown lmsd:lmsd /var/lib/logitechmediaserver`;
-`chmod 755 /var/lib/logitechmediaserver`;
-
-`cp svc-lmsd /lib/svc/method`;
-`chmod 755  /lib/svc/method/svc-lmsd
-`chown root:bin  /lib/svc/method/svc-lmsd`;
-`cp lmsd.xml /lib/svc/manifest/network`;
-`chmod 755 /lib/svc/manifest/network/lmsd.xml`;
-`chown root:sys /lib/svc/manifest/network/lmsd.xml`;
-`svccfg import /lib/svc/manifest/network/lmsd.xml`;
-`svcadm enable lmsd`;
-`cd /root`;
+    `cp svc-lmsd /lib/svc/method`;
+    `chmod 755  /lib/svc/method/svc-lmsd
+    `chown root:bin  /lib/svc/method/svc-lmsd`;
+    `cp lmsd.xml /lib/svc/manifest/network`;
+    `chmod 755 /lib/svc/manifest/network/lmsd.xml`;
+    `chown root:sys /lib/svc/manifest/network/lmsd.xml`;
+    `svccfg import /lib/svc/manifest/network/lmsd.xml`;
+    `svcadm enable lmsd`;
+    `cd /root`;    
