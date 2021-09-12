@@ -89,10 +89,8 @@ print "\n"x40;
 
     print "installing logitechmediaserver\n";
     `git clone https://github.com/urknall/logitechmediaserver-omnios.git logitechmediaserver-omnios.git`;
-    `cd logitechmediaserver-omnios.git/logitechmediaserver`;
     `mkdir /opt/logitechmediaserver`;
-    `cp -r * /opt/logitechmediaserver`;
-    `cd ..`;
+    `cp -r /root/logitechmediaserver-omnios.git/logitechmediaserver/* /opt/logitechmediaserver`;
 
     `useradd -c 'lmsd' -d /var/empty -s /bin/false lmsd`;
     `groupadd lmsd`;
@@ -102,12 +100,11 @@ print "\n"x40;
     `chown lmsd:lmsd /var/lib/logitechmediaserver`;
     `chmod 755 /var/lib/logitechmediaserver`;
 
-    `cp svc-lmsd /lib/svc/method`;
+    `cp /root/logitechmediaserver-omnios.git/svc-lmsd /lib/svc/method`;
     `chmod 755  /lib/svc/method/svc-lmsd`;
     `chown root:bin  /lib/svc/method/svc-lmsd`;
-    `cp lmsd.xml /lib/svc/manifest/network`;
+    `cp /root/logitechmediaserver-omnios.git/lmsd.xml /lib/svc/manifest/network`;
     `chmod 755 /lib/svc/manifest/network/lmsd.xml`;
     `chown root:sys /lib/svc/manifest/network/lmsd.xml`;
     `svccfg import /lib/svc/manifest/network/lmsd.xml`;
     `svcadm enable lmsd`;
-    `cd /root`;    
