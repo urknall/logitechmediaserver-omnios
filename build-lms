@@ -1,0 +1,105 @@
+#!/bin/bash
+
+STAMP=`date '+%m-%d-%y--%H:%M'`
+
+GCCVERSION=gcc10
+GCCPATH=gcc-10
+LMSVERSION=8.3.0
+PERLVERSION=5.32.1
+YASMVERSION=1.3.0
+NASMVERSION=2.15.05
+
+beadm create pre_lms_setup_$LMSVERSION-created-$STAMP
+
+pkg install --deny-new-be $GCCVERSION
+pkg install --deny-new-be gnu-make gnu-tar linker header-math object-file gnu-coreutils lint system/header
+pkg install --deny-new-be git
+pkg install --deny-new-be rsync
+
+
+#wget http://www.cpan.org/src/5.0/perl-$PERLVERSION.tar.gz
+#tar -xzf perl-$PERLVERSION.tar.gz
+#mv perl-$PERLVERSION perl-$PERLVERSION.src
+#cd perl-$PERLVERSION.src
+
+#./Configure -d -Dcc=gcc -Dusethreads -Duse64bitint -Dprefix=/opt/perl-$PERLVERSION -Dccflags="-D_REENTRANT \
+#-m64 -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 \
+#-D_FORTIFY_SOURCE=2 -DPERL_USE_SAFE_PUTENV" -A ldflags=-fno-stack-protector 
+
+#gmake
+#gmake install
+
+#cd /root
+
+
+wget http://www.tortall.net/projects/yasm/releases/yasm-$YASMVERSION.tar.gz
+tar xvf yasm-$YASMVERSION.tar.gz
+mv yasm-$YASMVERSION yasm-$YASMVERSION.src
+cd yasm-$YASMVERSION.src
+./configure -prefix=/opt/yasm-$YASMVERSION
+
+gmake
+gmake install
+
+cd /root
+
+wget http://www.nasm.us/pub/nasm/releasebuilds/$NASMVERSION/nasm-$NASMVERSION.tar.gz
+tar xvf nasm-$NASMVERSION.tar.gz
+mv nasm-$NASMVERSION nasm-$NASMVERSION.src
+cd nasm-$NASMVERSION.src
+./configure -prefix=/opt/nasm-$NASMVERSION
+
+gmake
+gmake install
+
+cd /root
+
+export PATH=/opt/gcc-$GCCPATH/bin:/opt/nasm-$NASMVERSION/bin:/opt/yasm-$YASMVERSION/bin:/usr/gnu/bin:$PATH
+
+git clone https://github.com/Logitech/slimserver.git slimserver.git
+cd slimserver.git
+mkdir /opt/logitechmediaserver
+cp -r * /opt/logitechmediaserver
+
+cd /root
+
+git clone https://github.com/urknall/slimserver-vendor.git slimserver-vendor.git
+cd slimserver-vendor.git/CPAN
+#./buildme.sh -i /opt/logitechmediaserver -p /opt/perl-$PERLVERSION/bin/perl
+./buildme.sh -i /opt/logitechmediaserver 
+
+cd /root
+
+useradd -c 'lmsd' -d /var/empty -s /bin/false lmsd
+groupadd lmsd
+chown -R lmsd:lmsd /opt/logitechmediaserver
+chmod -R 755 /opt/logitechmediaserver
+mkdir /var/lib/logitechmediaserver
+chown lmsd:lmsd /var/lib/logitechmediaserver
+chmod 755 /var/lib/logitechmediaserver
+
+cp svc-lmsd /lib/svc/method
+chmod 755  /lib/svc/method/svc-lmsd
+chown root:bin  /lib/svc/method/svc-lmsd
+cp lmsd.xml /lib/svc/manifest/network
+chmod 755 /lib/svc/manifest/network/lmsd.xml
+chown root:sys /lib/svc/manifest/network/lmsd.xml
+svccfg import /lib/svc/manifest/network/lmsd.xml
+
+svcadm enable lmsd
+
+
+# manual installation IO Socket SSL:
+# perl -MCPAN -e shell
+# notest install IO::Socket::SSL
+# exit;
+
+# manual installation of Shairtunes2W modules:
+# curl -kL http://install.perlbrew.pl | bash
+# source ~/perl5/perlbrew/etc/bashrc
+# perlbrew install --multi --64int --thread --notest -Dcc=gcc -j 4 perl-5.32.1
+# perlbrew switch perl-5.32.1
+# cpan -T TODDR/Crypt-OpenSSL-RSA-0.30.tar.gz
+# cpan -T Crypt::Ed25519
+# cpan -M https://cpan.metacpan.org -T MIK/CryptX-0.060.tar.gz
+# TODO Bonjour dns/multicast service in OmniOS
