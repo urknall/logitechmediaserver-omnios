@@ -103,7 +103,7 @@ print "\n"x40;
     `chmod 755 /var/lib/logitechmediaserver`;
 
     `cp svc-lmsd /lib/svc/method`;
-    `chmod 755  /lib/svc/method/svc-lmsd
+    `chmod 755  /lib/svc/method/svc-lmsd`;
     `chown root:bin  /lib/svc/method/svc-lmsd`;
     `cp lmsd.xml /lib/svc/manifest/network`;
     `chmod 755 /lib/svc/manifest/network/lmsd.xml`;
