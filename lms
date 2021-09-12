@@ -1,0 +1,123 @@
+#!/usr/bin/perl
+## nappit add-on logitechmediaserver
+## 09/2021, install script from urknall
+
+############
+## setup lms (Logitechmediaserver)
+##
+####################################################################################
+# At the moment only OmniOS CE r151038 with perl 5.32.1 is supported
+#
+####################################################################################
+
+
+####################
+# not on Solaris  11, included
+####################
+     $ant=`uname -a`;
+     @par=split(/ /,$ant);
+     if ($par[3]=~/^11\./i) {
+       print "\n"x20;
+       print "This lms installer is running on Illumos based systems only.\n\n";
+       exit;
+     }
+
+###############
+### root only !
+###############
+     $ant=`whoami`; chomp $ant;
+     if ($ant ne "root") {
+         print "user $ant not allowed\nlogin as root or su and run setup again!";
+         exit;
+     }
+
+#run from $HOME ie /root
+###############
+               $t=`pwd`;
+               $ant=`echo \$HOME`;
+               if ($t ne $ant){
+                      print "\n\n#####################\nYou must call wget as from your \$HOME-directory.\n Please do a cd /\$HOME and try again.\n\n";
+                      exit;
+               }
+
+##date
+#######
+ ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydat,$isdst) = localtime(time);
+ $mon++;
+ if ($min < 10)  { $min  = "0$min";  }
+ if ($hour < 10) { $hour = "0$hour"; }
+ if ($mday < 10) { $mday = "0$mday"; }
+ if ($mon < 10)  { $mon  = "0$mon";  }
+ $year=1900+$year;
+
+
+
+##############
+# Startmessage
+##############
+$t=`echo \$HOME`;
+chomp($t);        # remove newline
+
+      print "\n"x20;
+      print "***************************************************************************\n\n";
+      print "**    Setup Nappit Logitechmediaserver Addon - 09/2021                    **\n";
+      print "**    intended for OmniOS                                                 **\n\n";
+      print "***************************************************************************\n\n";
+      print "** Actions ():                                     \n";
+      print "**                                                 **\n";
+      print "***************************************************************************\n\n\n";
+      print "*  \n";
+      sleep(3);
+      print " 3 \n"; sleep(2);
+      print " 2 \n"; sleep(2);
+      print " 1 \n"; sleep(2);
+
+print "\n"x40;
+
+
+#########################################################
+## step 1. create BE, optionally add path to all commands
+#########################################################
+
+    # create BE pre setup
+    $t=time();
+    `beadm create pre_lms_setup_$LMSVERSION`;
+
+#############################
+## step 1: Install packages
+#############################
+
+
+echo "### Installing needed packages
+`pkg install --deny-new-be git`;
+`pkg install --deny-new-be rsync`;
+
+#############################
+## step 2: Install LMS
+#############################
+echo "### Installing Logitechmediaserver
+
+
+`git clone https://github.com/urknall/logitechmediaserver-omnios.git logitechmediaserver-omnios.git`;
+`cd logitechmediaserver-omnios.git/logitechmediaserver`;
+`mkdir /opt/logitechmediaserver`;
+`cp -r * /opt/logitechmediaserver`;
+`cd ..`;
+
+`useradd -c 'lmsd' -d /var/empty -s /bin/false lmsd`;
+`groupadd lmsd`;
+`chown -R lmsd:lmsd /opt/logitechmediaserver`;
+`chmod -R 755 /opt/logitechmediaserver`;
+`mkdir /var/lib/logitechmediaserver`;
+`chown lmsd:lmsd /var/lib/logitechmediaserver`;
+`chmod 755 /var/lib/logitechmediaserver`;
+
+`cp svc-lmsd /lib/svc/method`;
+`chmod 755  /lib/svc/method/svc-lmsd
+`chown root:bin  /lib/svc/method/svc-lmsd`;
+`cp lmsd.xml /lib/svc/manifest/network`;
+`chmod 755 /lib/svc/manifest/network/lmsd.xml`;
+`chown root:sys /lib/svc/manifest/network/lmsd.xml`;
+`svccfg import /lib/svc/manifest/network/lmsd.xml`;
+`svcadm enable lmsd`;
+`cd /root`;
