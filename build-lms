@@ -6,8 +6,8 @@ GCCVERSION=gcc10
 GCCPATH=gcc-10
 LMSVERSION=8.3.0
 PERLVERSION=5.32.1
-YASMVERSION=1.3.0
 NASMVERSION=2.15.05
+YASMVERSION=1.3.0
 
 beadm create pre_lms_setup_$LMSVERSION-created-$STAMP
 
@@ -31,23 +31,22 @@ pkg install --deny-new-be rsync
 
 #cd /root
 
-
-wget http://www.tortall.net/projects/yasm/releases/yasm-$YASMVERSION.tar.gz
-tar xvf yasm-$YASMVERSION.tar.gz
-mv yasm-$YASMVERSION yasm-$YASMVERSION.src
-cd yasm-$YASMVERSION.src
-./configure -prefix=/opt/yasm-$YASMVERSION
+wget http://www.nasm.us/pub/nasm/releasebuilds/$NASMVERSION/nasm-$NASMVERSION.tar.gz
+tar xvf nasm-$NASMVERSION.tar.gz
+mv nasm-$NASMVERSION nasm-$NASMVERSION.src
+cd nasm-$NASMVERSION.src
+./configure -prefix=/opt/nasm-$NASMVERSION
 
 gmake
 gmake install
 
 cd /root
 
-wget http://www.nasm.us/pub/nasm/releasebuilds/$NASMVERSION/nasm-$NASMVERSION.tar.gz
-tar xvf nasm-$NASMVERSION.tar.gz
-mv nasm-$NASMVERSION nasm-$NASMVERSION.src
-cd nasm-$NASMVERSION.src
-./configure -prefix=/opt/nasm-$NASMVERSION
+wget http://www.tortall.net/projects/yasm/releases/yasm-$YASMVERSION.tar.gz
+tar xvf yasm-$YASMVERSION.tar.gz
+mv yasm-$YASMVERSION yasm-$YASMVERSION.src
+cd yasm-$YASMVERSION.src
+./configure -prefix=/opt/yasm-$YASMVERSION
 
 gmake
 gmake install
@@ -87,7 +86,6 @@ chown root:sys /lib/svc/manifest/network/lmsd.xml
 svccfg import /lib/svc/manifest/network/lmsd.xml
 
 svcadm enable lmsd
-
 
 # manual installation IO Socket SSL:
 # perl -MCPAN -e shell
