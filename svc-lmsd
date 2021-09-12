@@ -109,7 +109,8 @@ case "$1" in
 'start')
 	echo "Starting ${SBSBINDIR}/slimserver.pl ${ARGS}" 
 	${PERLBIN} ${SBSBINDIR}/slimserver.pl ${ARGS} 
-	;
+	;;
+
 'stop')
         if test '!' -f $PIDFILE ; then
                 echo "$PIDFILE doesn't exist, perhaps LMS isn't running"
@@ -137,3 +138,4 @@ case "$1" in
 	;; 
 esac
 exit $SMF_EXIT_OK
+
