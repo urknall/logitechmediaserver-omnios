@@ -62,7 +62,7 @@ cp -r * /opt/logitechmediaserver
 
 cd /root
 
-git clone https://github.com/urknall/slimserver-vendor.git slimserver-vendor.git
+git clone https://github.com/Logitech/slimserver-vendor.git slimserver-vendor.git
 cd slimserver-vendor.git/CPAN
 #./buildme.sh -i /opt/logitechmediaserver -p /opt/perl-$PERLVERSION/bin/perl
 ./buildme.sh -i /opt/logitechmediaserver 
