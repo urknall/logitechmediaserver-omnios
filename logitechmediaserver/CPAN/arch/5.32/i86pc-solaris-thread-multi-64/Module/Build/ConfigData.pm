@@ -169,6 +169,12 @@ do{ my $x = [
        {},
        {},
        {
+         'YAML_support' => {
+                             'requires' => {
+                                             'YAML' => ' >= 0.35, != 0.49_01 '
+                                           },
+                             'description' => 'Use YAML.pm to write META.yml files'
+                           },
          'HTML_support' => {
                              'requires' => {
                                              'Pod::Html' => 0
@@ -176,25 +182,19 @@ do{ my $x = [
                              'description' => 'Create HTML documentation'
                            },
          'manpage_support' => {
+                                'description' => 'Create Unix man pages',
                                 'requires' => {
                                                 'Pod::Man' => 0
-                                              },
-                                'description' => 'Create Unix man pages'
+                                              }
                               },
-         'YAML_support' => {
-                             'requires' => {
-                                             'YAML' => ' >= 0.35, != 0.49_01 '
-                                           },
-                             'description' => 'Use YAML.pm to write META.yml files'
-                           },
          'C_support' => {
                           'requires' => {
                                           'ExtUtils::CBuilder' => '0.15'
                                         },
+                          'description' => 'Compile/link C & XS code',
                           'recommends' => {
                                             'ExtUtils::ParseXS' => '1.02'
-                                          },
-                          'description' => 'Compile/link C & XS code'
+                                          }
                         }
        }
      ];
