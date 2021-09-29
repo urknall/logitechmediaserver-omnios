@@ -55,7 +55,7 @@
 			<propval name='cliport' type='astring' value='9090' />
 			<propval name='dbtype' type='astring' value='SQLite' />
 			<propval name='lctype' type='astring' value='de_DE.UTF-8' />
-                        <propval name='charset' type='astring' value='utf8' />
+                        <propval name='charset' type='astring' value='UTF-8' />
 			<propval name='value_authorization' type='astring' value='solaris.smf.value.lmsd' />
                         <propval name='action_authorization' type='astring' value='solaris.smf.manage.lmsd' />
                 </property_group>
