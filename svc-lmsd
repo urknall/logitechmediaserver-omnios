@@ -30,6 +30,8 @@ CLIADDR=`getproparg lmsd/cliaddr`
 IMAGE=`getproparg lmsd/image`
 VIDEO=`getproparg lmsd/video`
 DBTYPE=`getproparg lmsd/dbtype`
+CHARSET=`getproparg lmsd/charset`
+CTYPE=`getproparg lmsd/lctype`
 PERLBIN=`getproparg lmsd/perlbin`
 
 PIDFILE=${CACHEDIR}/lmsd.pid
@@ -102,11 +104,12 @@ if ! [ "${CLIPORT}" == "9090" ]; then
         ARGS="${ARGS} --cliport=$CLIPORT"
 fi
 
-ARGS="${ARGS} --cachedir=${CACHEDIR} --prefsdir=${PREFSDIR} --logdir=${LOGDIR} --pidfile=${PIDFILE} --dbtype=${DBTYPE}"
+ARGS="${ARGS} --cachedir=${CACHEDIR} --prefsdir=${PREFSDIR} --logdir=${LOGDIR} --pidfile=${PIDFILE} --dbtype=${DBTYPE} --charset=${CHARSET}"
 
 # Define start, stop, restart and refresh event 
 case "$1" in
 'start')
+        export LC_CTYPE="${CTYPE}"
 	echo "Starting ${SBSBINDIR}/slimserver.pl ${ARGS}" 
 	${PERLBIN} ${SBSBINDIR}/slimserver.pl ${ARGS} 
 	;;
