@@ -169,18 +169,6 @@ do{ my $x = [
        {},
        {},
        {
-         'YAML_support' => {
-                             'requires' => {
-                                             'YAML' => ' >= 0.35, != 0.49_01 '
-                                           },
-                             'description' => 'Use YAML.pm to write META.yml files'
-                           },
-         'HTML_support' => {
-                             'requires' => {
-                                             'Pod::Html' => 0
-                                           },
-                             'description' => 'Create HTML documentation'
-                           },
          'manpage_support' => {
                                 'description' => 'Create Unix man pages',
                                 'requires' => {
@@ -195,7 +183,19 @@ do{ my $x = [
                           'recommends' => {
                                             'ExtUtils::ParseXS' => '1.02'
                                           }
-                        }
+                        },
+         'HTML_support' => {
+                             'description' => 'Create HTML documentation',
+                             'requires' => {
+                                             'Pod::Html' => 0
+                                           }
+                           },
+         'YAML_support' => {
+                             'description' => 'Use YAML.pm to write META.yml files',
+                             'requires' => {
+                                             'YAML' => ' >= 0.35, != 0.49_01 '
+                                           }
+                           }
        }
      ];
 $x; }
