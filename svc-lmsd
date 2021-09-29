@@ -109,7 +109,7 @@ ARGS="${ARGS} --cachedir=${CACHEDIR} --prefsdir=${PREFSDIR} --logdir=${LOGDIR} -
 # Define start, stop, restart and refresh event 
 case "$1" in
 'start')
-        export LC_CTYPE="${CTYPE}"
+	export LC_CTYPE="${CTYPE}"
 	echo "Starting ${SBSBINDIR}/slimserver.pl ${ARGS}" 
 	${PERLBIN} ${SBSBINDIR}/slimserver.pl ${ARGS} 
 	;;
