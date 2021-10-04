@@ -27,6 +27,8 @@ HTTPPORT=`getproparg lmsd/httpport`
 HTTPADDR=`getproparg lmsd/httpaddr`
 CLIPORT=`getproparg lmsd/cliport`
 CLIADDR=`getproparg lmsd/cliaddr`
+PLAYERADDR=`getproparg lmsd/playeraddr`
+STREAMADDR=`getproparg lmsd/streamaddr`
 IMAGE=`getproparg lmsd/image`
 VIDEO=`getproparg lmsd/video`
 DBTYPE=`getproparg lmsd/dbtype`
@@ -102,6 +104,14 @@ fi
 
 if ! [ "${CLIPORT}" == "9090" ]; then
         ARGS="${ARGS} --cliport=$CLIPORT"
+fi
+
+if ! [ "${PLAYERADDR}" == "0.0.0.0" ]; then
+        ARGS="${ARGS} --playeraddr=$PLAYERADDR"
+fi
+
+if ! [ "${STREAMADDR}" == "0.0.0.0" ]; then
+        ARGS="${ARGS} --streamaddr=$STREAMADDR"
 fi
 
 ARGS="${ARGS} --cachedir=${CACHEDIR} --prefsdir=${PREFSDIR} --logdir=${LOGDIR} --pidfile=${PIDFILE} --dbtype=${DBTYPE} --charset=${CHARSET}"
