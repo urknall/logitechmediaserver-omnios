@@ -52,6 +52,8 @@
 			<propval name='httpaddr' type='astring' value='0.0.0.0' />
 			<propval name='httpport' type='astring' value='9000' />
 			<propval name='cliaddr' type='astring' value='0.0.0.0' />
+			<propval name='playeraddr' type='astring' value='0.0.0.0' />
+			<propval name='streamaddr' type='astring' value='0.0.0.0' />
 			<propval name='cliport' type='astring' value='9090' />
 			<propval name='dbtype' type='astring' value='SQLite' />
 			<propval name='lctype' type='astring' value='de_DE.UTF-8' />
