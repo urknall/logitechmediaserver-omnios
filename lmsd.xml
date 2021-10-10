@@ -60,6 +60,8 @@
                         <propval name='charset' type='astring' value='UTF-8' />
 			<propval name='value_authorization' type='astring' value='solaris.smf.value.lmsd' />
                         <propval name='action_authorization' type='astring' value='solaris.smf.manage.lmsd' />
+                        <!-- sub-process core dumps shouldn't restart session -->
+                        <propval name='ignore_error' type='astring' value='core,signal' /> 
                 </property_group>
 		
 		<template>
