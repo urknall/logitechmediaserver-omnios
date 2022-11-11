@@ -26,7 +26,7 @@
 	[% WRAPPER setting title="PLUGIN_ONLINE_LIBRARY_GENRE_REPLACEMENT" desc="PLUGIN_ONLINE_LIBRARY_GENRE_REPLACEMENT_DESC" %]
 		<p>[% "GENRES" | string %][% "COLON" | string %] [% genre_list.join(', ') %]</p>
 
-		<div style="padding:10px 0"><a href="settings.html">[% "PLUGIN_ONLINE_LIBRARY_GENRE_REPLACEMENT_BASIC" | string %]</a></div>
+		<div style="padding:10px 0"><a href="[% webroot %]plugins/OnlineLibrary/settings.html">[% "PLUGIN_ONLINE_LIBRARY_GENRE_REPLACEMENT_BASIC" | string %]</a></div>
 
 		<div class="settingSection" style="margin-top:0;margin-bottom:20px;" id="albumGenreMappings">
 			<table id="albumGenreMappingsTable">
@@ -38,11 +38,11 @@
 					</tr>
 				</thead>
 				<tbody>
-					[% FOREACH mappingKey = genreMappings.keys.sort %]
+					[% FOREACH mappingKey = sortOrder %]
 					<tr>
 						<td>[% genreMappings.$mappingKey.0 %]</td>
 						<td>[% genreMappings.$mappingKey.1 %]</td>
-						<td><input type="text" name="mapping_[% mappingKey %]" value="[% genreMappings.$mappingKey.2 %]" style="width:90%"></td>
+						<td><input type="text" name="mapping_[% mappingKey %]" value="[% genreMappings.$mappingKey.2 | html %]" style="width:90%"></td>
 					</tr>
 					[% END %]
 				</tbody>

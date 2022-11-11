@@ -15,7 +15,7 @@ use Slim::Utils::Strings qw(string);
 
 my $log   = logger('plugin.podcast');
 my $prefs = preferences('plugin.podcast');
-my @hidden = qw(maxNew newSince );
+my @hidden = qw(maxNew newSince country);
 
 sub name {
 	return Slim::Web::HTTP::CSRF->protectName('PLUGIN_PODCAST');
@@ -47,7 +47,9 @@ sub handler {
 
 sub beforeRender {
 	my ($class, $params, $client) = @_;
-	$params->{newsHandler} = defined Slim::Plugin::Podcast::Plugin::getProviderByName->can('newsHandler');
+	my $provider = Slim::Plugin::Podcast::Plugin::getProviderByName;
+	$params->{newsHandler} = defined $provider->can('newsHandler');
+	$params->{hasCountry} = $provider->hasCountry;
 }
 
 sub saveSettings {
@@ -85,7 +87,7 @@ sub saveSettings {
 		
 		# don't erase hidden parameters if they are not set
 		foreach (@hidden) {
-			$params->{"pref_$_"} ||= $prefs->get($_);
+			$params->{"pref_$_"} //= $prefs->get($_);
 		}	
 		
 		$prefs->set( feeds => $feeds );

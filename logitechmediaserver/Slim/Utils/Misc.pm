@@ -89,7 +89,7 @@ my $MAX_CACHE_ENTRIES = $prefs->get('dbhighmem') ? 512 : 32;
 
 $prefs->setChange( sub {
 	%mediadirsCache = ();
-}, 'mediadirs', 'ignoreInAudioScan', 'ignoreInVideoScan', 'ignoreInImageScan');
+}, 'mediadirs', 'ignoreInAudioScan');
 
 =head1 METHODS
 
@@ -421,7 +421,7 @@ sub crackURL {
 
 	my ($user, $pass, $host, $port, $path) = ($1, $2, $3, $4, $5);
 
-	$path ||= '/';
+	$path = '/' . $path if $path !~ m|^/|;
 	$port ||= ((Slim::Networking::Async::HTTP->hasSSL() && $string =~ /^https/) ? 443 : 80);
 
 	my $proxied = "http://$host:$port$path" if $prefs->get('webproxy') && $host !~ /(?:localhost|127.0.0.1)/;
@@ -732,8 +732,6 @@ sub getMediaDirs {
 	if ($type) {
 		my $ignoreList = { map { $_, 1 } @{ getDirsPref({
 			audio => 'ignoreInAudioScan',
-			video => 'ignoreInVideoScan',
-			image => 'ignoreInImageScan',
 		}->{$type}) } };
 
 		$mediadirs = [ grep { !$ignoreList->{$_} } @$mediadirs ];
@@ -753,29 +751,9 @@ sub getAudioDirs {
 	return getMediaDirs('audio', shift);
 }
 
-sub getVideoDirs {
-	return (main::VIDEO && main::MEDIASUPPORT) ? getMediaDirs('video', shift) : [];
-}
-
-sub getImageDirs {
-	return (main::IMAGE && main::MEDIASUPPORT) ? getMediaDirs('image', shift) : [];
-}
-
 # get list of folders which are disabled for all media
-sub getInactiveMediaDirs {
-	my @mediadirs = @{ getDirsPref('ignoreInAudioScan') };
-
-	if (main::IMAGE && main::MEDIASUPPORT && scalar @mediadirs) {
-		my $ignoreList = { map { $_, 1 } @{ getImageDirs() } };
-		@mediadirs = grep { !$ignoreList->{$_} } @mediadirs;
-	}
-
-	if (main::VIDEO && main::MEDIASUPPORT && scalar @mediadirs) {
-		my $ignoreList = { map { $_, 1 } @{ getVideoDirs() } };
-		@mediadirs = grep { !$ignoreList->{$_} } @mediadirs;
-	}
-
-	return \@mediadirs;
+sub getInactiveAudioDirs {
+	return getDirsPref('ignoreInAudioScan');
 }
 
 sub getDirsPref {
@@ -831,6 +809,10 @@ my %_ignoredItems = Slim::Utils::OSDetect::getOS->ignoredItems();
 # always ignore . and ..
 $_ignoredItems{'.'}  = 1;
 $_ignoredItems{'..'} = 1;
+
+# some items which are exposed on shares on popular platforms
+$_ignoredItems{'#recycle'} = 1;
+$_ignoredItems{'#snapshot'} = 1;
 
 # Don't include old Shoutcast recently played items.
 $_ignoredItems{'ShoutcastBrowser_Recently_Played'} = 1;
@@ -1119,6 +1101,8 @@ sub findAndScanDirectoryTree {
 	if (!blessed($topLevelObj) || !$topLevelObj->can('path') || !$topLevelObj->can('id')) {
 
 		logError("Couldn't find a topLevelObj!");
+
+		main::INFOLOG && $scannerlog->is_info && $scannerlog->info("Params: " . Data::Dump::dump($params));
 
 		return ();
 	}

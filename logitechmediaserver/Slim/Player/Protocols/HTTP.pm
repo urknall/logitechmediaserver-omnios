@@ -59,7 +59,7 @@ sub new {
 
 	${*$self}{'client'}  = $args->{'client'};
 	${*$self}{'url'}     = $args->{'url'};
-	${*$self}{'_class'}  = $class;	
+	${*$self}{'_class'}  = $class;
 
 	return $self;
 }
@@ -79,14 +79,14 @@ sub close {
 	} elsif ($enhanced->{'status'} && $enhanced->{'status'} > IDLE) {
 		# disconnect persistent session (if any)
 		$enhanced->{'session'}->disconnect;
-	}		
+	}
 }
 
 sub response {
 	my $self = shift;
 	my ($args, $request, @headers) = @_;
 
-	# HTTP headers have now been acquired in a blocking way		
+	# HTTP headers have now been acquired in a blocking way
 	my $enhance = $self->canEnhanceHTTP($args->{'client'}, $args->{'url'});
 	return unless $enhance;
 
@@ -99,11 +99,11 @@ sub response {
 		if ($uri !~ /^https?/) {
 			my ($proto, $host, $port) = $args->{'url'} =~ m|(.+)://(?:[^\@]*\@)?([^:/]+):*(\d*)|;
 			$request_object->uri("$proto://$host" . ($port ? ":$port" : '') . $uri);
-		}	
+		}
 
 		my ($first) = $self->contentRange =~ /(\d+)-/;
 		my $length = $self->contentLength;
-		
+
 		${*$self}{'_enhanced'} = {
 			'session' => Slim::Networking::Async::HTTP->new,
 			'request' => $request_object,
@@ -116,7 +116,7 @@ sub response {
 		};
 
 		main::INFOLOG && $log->is_info && $log->info("Using Persistent service for $args->{'url'}");
-	} else {	
+	} else {
 		# enable fast download of body to a file from which we'll read further data
 		# but the switch of socket handler can only be done within _sysread otherwise
 		# we will timeout when there is a pipeline with a callback
@@ -159,7 +159,7 @@ sub request {
 		if ($formatClass->can('getInitialAudioBlock')) {
 			$song->initialAudioBlock($formatClass->getInitialAudioBlock($fh, $track, $seekdata->{timeOffset} || 0));
 		}
-		
+
 		$song->initialAudioBlock('') unless defined $song->initialAudioBlock;
 
 		$fh->close if $fh;
@@ -178,7 +178,7 @@ sub request {
 	${*$self}{'initialAudioBlockRef'} = $blockRef;
 	${*$self}{'initialAudioBlockRemaining'} = length $$blockRef;
 
-	# dynamic headers need to be re-calculated every time 
+	# dynamic headers need to be re-calculated every time
 	$song->initialAudioBlock(undef) if $processor->{'initial_block_type'};
 
 	main::DEBUGLOG && $log->debug("streaming $args->{url} with header of ", length $$blockRef, " from ",
@@ -197,25 +197,13 @@ sub readMetaData {
 	my $metadataSize = 0;
 	my $byteRead = 0;
 
-	while ($byteRead == 0) {
+	# some streaming servers might align their chunks on metadata which means that
+	# we might wait a long while for the 1st byte. We don't want about busy loop, so
+	# exit if we don't have one. But once we have it, rest shall follow shortly
 
-		$byteRead = readChunk($self, $metadataSize, 1);
-
-		if ($!) {
-
-			if ($! ne "Unknown error" && $! != EWOULDBLOCK && $! != EINTR) {
-
-			 	#$log->warn("Warning: Metadata byte not read! $!");
-			 	return;
-
-			 }
-			 else {
-
-				#$log->debug("Metadata byte not read, trying again: $!");
-			 }
-		}
-
-		$byteRead = defined $byteRead ? $byteRead : 0;
+	if (!readChunk($self, $metadataSize, 1)) {
+		$log->debug("Metadata byte not read, trying again: $!");
+		return undef;
 	}
 
 	$metadataSize = ord($metadataSize) * 16;
@@ -231,15 +219,13 @@ sub readMetaData {
 			$byteRead = readChunk($self, $metadatapart, $metadataSize);
 
 			if ($!) {
+
 				if ($! ne "Unknown error" && $! != EWOULDBLOCK && $! != EINTR) {
-
-					#$log->info("Metadata bytes not read! $!");
-					return;
-
+					$log->error("Metadata bytes not read! $!");
+					return -1;
 				}
 				else {
-
-					#$log->info("Metadata bytes not read, trying again: $!");
+					$log->debug("Metadata bytes not read, trying again: $!");
 				}
 			}
 
@@ -253,6 +239,8 @@ sub readMetaData {
 
 		${*$self}{'title'} = __PACKAGE__->parseMetadata($client, $self->url, $metadata);
 	}
+
+	return 1;
 }
 
 sub getFormatForURL {
@@ -403,11 +391,11 @@ sub parseMetadata {
 
 sub canEnhanceHTTP {
 	return $prefs->get('useEnhancedHTTP');
-}	
+}
 
 sub canDirectStream {
 	my ($class, $client, $url, $inType) = @_;
-	
+
 	# when persistent is used, we won't direct stream to enable retries
 	return 0 if $class->canEnhanceHTTP($client, $url);
 
@@ -467,28 +455,28 @@ sub readChunk {
 }
 
 sub readPersistentChunk {
-	my $enhanced = shift;	
+	my $enhanced = shift;
 	my $self  = $_[0];
 
 	# read directly from socket if primary connection is still active
 	if ($enhanced->{'status'} == IDLE) {
 		my $readLength = $self->_sysread($_[1], $_[2], $_[3]);
 		$enhanced->{'first'} += $readLength;
-	
+
 		# return sysread's result UNLESS we reach eof before expected length
 		return $readLength unless defined($readLength) && !$readLength && $enhanced->{'first'} != $self->contentLength;
-	}					 
+	}
 
 	# all received using persistent connection
 	return 0 if $enhanced->{'status'} == DISCONNECTED;
 
 	# if we are not streaming, need to (re)start a session
 	if ( $enhanced->{'status'} <= READY ) {
-		my $request = $enhanced->{'request'}; 
+		my $request = $enhanced->{'request'};
 		my $last = $enhanced->{'length'} - 1 if $enhanced->{'length'};
-		
+
 		$request->header( 'Range', "bytes=$enhanced->{'first'}-$last");
-		$enhanced->{'status'} = CONNECTING;		
+		$enhanced->{'status'} = CONNECTING;
 		$enhanced->{'lastSeen'} = undef;
 
 		$log->warn("Persistent streaming from $enhanced->{'first'} for ${*$self}{'url'}");
@@ -514,15 +502,15 @@ sub readPersistentChunk {
 	# the child socket is non-blocking so we can safely call read_entity_body which calls sysread
 	# if buffer is empty. This is normally a callback used when select() indicates pending bytes
 	my $bytes = $enhanced->{'session'}->socket->read_entity_body($_[1], $_[2]) if $enhanced->{'status'} == CONNECTED;
-	
+
 	# note that we use EINTR with empty buffer because EWOULDBLOCK allows Source::_readNextChunk
 	# to do an addRead on $self and would not work as primary socket is closed
 	if ( $bytes && $bytes != -1 ) {
 		$enhanced->{'first'} += $bytes;
 		$enhanced->{'lastSeen'} = time();
 		return $bytes;
-	} elsif ( $bytes == -1 || (!defined $bytes && $enhanced->{'errors'} < $enhanced->{'max'} && 
-							  ($enhanced->{'status'} != CONNECTED || $! == EINTR || $! == EWOULDBLOCK) && 
+	} elsif ( $bytes == -1 || (!defined $bytes && $enhanced->{'errors'} < $enhanced->{'max'} &&
+							  ($enhanced->{'status'} != CONNECTED || $! == EINTR || $! == EWOULDBLOCK) &&
 							  (!defined $enhanced->{'lastSeen'} || time() - $enhanced->{'lastSeen'} < 5)) ) {
 		$! = EINTR;
 		main::DEBUGLOG && $log->is_debug && $log->debug("need to wait for ${*$self}{'url'}");
@@ -533,7 +521,7 @@ sub readPersistentChunk {
 		main::INFOLOG && $log->is_info && $log->info("end of ${*$self}{'url'} s:", time() - $enhanced->{'lastSeen'}, " e:$enhanced->{'errors'}");
 		return 0;
 	} else {
-		$log->warn("unexpected connection close at $enhanced->{'first'}/$enhanced->{'length'} for ${*$self}{'url'}\n\tsince:", 
+		$log->warn("unexpected connection close at $enhanced->{'first'}/$enhanced->{'length'} for ${*$self}{'url'}\n\tsince:",
 		           time() - $enhanced->{'lastSeen'}, "\n\terror:", ($! != EINTR && $! != EWOULDBLOCK) ? $! : "N/A");
 		$enhanced->{'session'}->disconnect;
 		$enhanced->{'status'} = READY;
@@ -544,7 +532,7 @@ sub readPersistentChunk {
 }
 
 sub readBufferedChunk {
-	my $enhanced = shift;	
+	my $enhanced = shift;
 	my $self  = $_[0];
 
 	# first, try to read from buffer file
@@ -627,12 +615,23 @@ sub sysread {
 	my $metaInterval = ${*$self}{'metaInterval'};
 	my $metaPointer  = ${*$self}{'metaPointer'};
 
-	if ($metaInterval && ($metaPointer + $chunkSize) > $metaInterval) {
+	# handle instream metadata for shoutcast/icecast
+	if ($metaInterval) {
 
-		$chunkSize = $metaInterval - $metaPointer;
+		if ($metaPointer == $metaInterval) {
+			# don't do anything if we can't read yet
+			$self->readMetaData() || return undef;
 
-		# This is very verbose...
-		#$log->debug("Reduced chunksize to $chunkSize for metadata");
+			$metaPointer = ${*$self}{'metaPointer'} = 0;
+		}
+		elsif ($metaPointer > $metaInterval) {
+			main::DEBUGLOG && $log->debug("The shoutcast metadata overshot the interval.");
+		}
+
+		if ($metaPointer + $chunkSize > $metaInterval) {
+			$chunkSize = $metaInterval - $metaPointer;
+			#$log->debug("Reduced chunksize to $chunkSize for metadata");
+		}
 	}
 
 	my $readLength;
@@ -646,25 +645,8 @@ sub sysread {
 		${*$self}{'audio_bytes'} = ${*$self}{'audio_process'}->($_[1], $chunkSize) if ${*$self}{'audio_process'};
 	}
 
-	# use $readLength from socket for meta interval adjustement
-	if ($metaInterval && $readLength) {
-
-		$metaPointer += $readLength;
-		${*$self}{'metaPointer'} = $metaPointer;
-
-		# handle instream metadata for shoutcast/icecast
-		if ($metaPointer == $metaInterval) {
-
-			$self->readMetaData();
-
-			${*$self}{'metaPointer'} = 0;
-
-		}
-		elsif ($metaPointer > $metaInterval) {
-
-			main::DEBUGLOG && $log->debug("The shoutcast metadata overshot the interval.");
-		}
-	}
+	# update metadata pointer only from *actual* sysread
+	${*$self}{'metaPointer'} += $readLength if  ${*$self}{'metaInterval'};
 
 	# when not-empty, choose return buffer length over sysread()
 	return length $_[1] if length $_[1];
@@ -741,12 +723,6 @@ sub parseDirectHeaders {
 			$startOffset = $1;
 			$rangeLength = $2;
 		}
-
-		# mp3tunes metadata, this is a bit of hack but creating
-		# an mp3tunes protocol handler is overkill
-		elsif ( $url =~ /mp3tunes\.com/ && $header =~ /^X-Locker-Info:\s*(.+)/i ) {
-			Slim::Plugin::MP3tunes::Plugin->setLockerInfo( $client, $url, $1 );
-		}
 	}
 
 	# Content-Range: has predecence over Content-Length:
@@ -817,7 +793,7 @@ sub parseHeaders {
 
 	# we should not parse anything before we have reached target
 	return if ${*$self}{'redirect'} = $redir;
-	
+
 	if ($contentType) {
 		if (($contentType =~ /text/i) && !($contentType =~ /text\/xml/i)) {
 			# webservers often lie about playlists.  This will
@@ -1010,14 +986,8 @@ sub scanUrl {
 	Slim::Utils::Scanner::Remote->scanURL($url, $args);
 }
 
-# Allow mp3tunes tracks to be scrobbled
 sub audioScrobblerSource {
 	my ( $class, $client, $url ) = @_;
-
-	if ( $url =~ /mp3tunes\.com/ ) {
-		# Scrobble mp3tunes as 'chosen by user' content
-		return 'P';
-	}
 
 	# R (radio source)
 	return 'R';

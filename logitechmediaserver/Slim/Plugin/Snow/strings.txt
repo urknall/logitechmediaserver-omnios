@@ -10,7 +10,7 @@ PLUGIN_SCREENSAVER_SNOW
 	FR	Ecran de veille Neige
 	HE	שומר מסך שלג
 	IT	Screen saver con neve
-	NL	Sneeuw-schermbeveiliger
+	NL	Sneeuw screensaver
 	NO	Skjermsparer med snø
 	PL	Wygaszacz ekranu Śnieg
 	RU	Экранная заставка "Снег"
@@ -26,7 +26,7 @@ PLUGIN_SCREENSAVER_SNOW_SETTINGS
 	FR	Réglages Ecran de veille Neige
 	HE	הגדרות שומר מסך שלג
 	IT	Impostazioni screen saver con neve
-	NL	Instellingen van sneeuw-schermbeveiliger
+	NL	Instellingen van sneeuw screensaver
 	NO	Innstillinger for skjermsparer med snø
 	PL	Ustawienia wygaszacza ekranu Śnieg
 	RU	Настройки экранной заставки "Снег"
@@ -58,7 +58,7 @@ PLUGIN_SCREENSAVER_SNOW_QUANTITY_TITLE
 	FR	Ecran de veille neige : Intensité
 	HE	שומר מסך שלג: כמות שלג
 	IT	Screen saver con neve: quantità di neve
-	NL	Sneeuw-schermbeveiliger: hoeveelheid sneeuw
+	NL	Sneeuw screensaver: hoeveelheid sneeuw
 	NO	Skjermsparer med snø: Snømengde
 	PL	Wygaszacz ekranu Śnieg: ilość śniegu
 	RU	Экранная заставка "Снег": количество снега
@@ -90,7 +90,7 @@ PLUGIN_SCREENSAVER_SNOW_QUANTITY_1
 	FR	C'est Noël !
 	HE	בסגנון חג המולד
 	IT	Natalizia
-	NL	Kerstmisachtig
+	NL	Kerstmis!
 	NO	Julete
 	PL	Boże Narodzenie
 	RU	Рождественский
@@ -170,14 +170,14 @@ PLUGIN_SCREENSAVER_SNOW_STYLE_TITLE
 	FR	Ecran de veille Neige : Type
 	HE	שומר מסך שלג: סגנון שלג
 	IT	Screen saver con neve: Tipo di neve
-	NL	Sneeuw-schermbeveiliger: sneeuwstijl
+	NL	Sneeuw screensaver: sneeuwstijl
 	NO	Skjermsparer med snø: Snøtype
 	PL	Wygaszacz ekranu Śnieg: rodzaj śniegu
 	RU	Экранная заставка "Снег": стиль снега
 	SV	Snöskärmsläckare: Snötyp
 
 PLUGIN_SCREENSAVER_SNOW_STYLE_1
-	CS	Nyní přehrávám, sníh padá v pozadí
+	CS	Právě hraje, sníh padá v pozadí
 	DA	Nu spiller: sne falder bagved
 	DE	Aktuelle Wiedergabe mit Schnee im Hintergrund
 	EN	Now Playing, snow falling behind
@@ -193,7 +193,7 @@ PLUGIN_SCREENSAVER_SNOW_STYLE_1
 	SV	Snö i bakgrunden när Nu spelas visas
 
 PLUGIN_SCREENSAVER_SNOW_STYLE_2
-	CS	Nyní přehrávám, sníh padá v popředí
+	CS	Právě hraje, sníh padá v popředí
 	DA	Nu spiller: sne falder foran
 	DE	Aktuelle Wiedergabe mit Schnee im Vordergrund
 	EN	Now Playing, snow falling in front
@@ -289,7 +289,7 @@ PLUGIN_SCREENSAVER_SNOW_NUMBER_OF_WORDS
 	SV	5
 
 PLUGIN_SCREENSAVER_SNOW_WORD_0
-	CS	VESELÉ
+	CS	VESELE
 	DA	GLÆDELIG
 	DE	FROHE
 	EN	MERRY
@@ -305,7 +305,7 @@ PLUGIN_SCREENSAVER_SNOW_WORD_0
 	SV	GOD
 
 PLUGIN_SCREENSAVER_SNOW_WORD_1
-	CS	VÁNOCE
+	CS	VANOCE
 	DA	JUL
 	DE	WEIHNACHTEN
 	EN	CHRISTMAS
@@ -321,7 +321,7 @@ PLUGIN_SCREENSAVER_SNOW_WORD_1
 	SV	JUL
 
 PLUGIN_SCREENSAVER_SNOW_WORD_2
-	CS	ANO A VELMI
+	CS	A
 	DA	OG ET RIGTIG
 	DE	UND EIN GUTES
 	EN	AND A VERY
@@ -337,7 +337,7 @@ PLUGIN_SCREENSAVER_SNOW_WORD_2
 	SV	OCH ETT
 
 PLUGIN_SCREENSAVER_SNOW_WORD_3
-	CS	HAPPY
+	CS	STASTNY
 	DA	GODT
 	DE	GLÜCKLICHES
 	EN	HAPPY
@@ -353,7 +353,7 @@ PLUGIN_SCREENSAVER_SNOW_WORD_3
 	SV	GOTT
 
 PLUGIN_SCREENSAVER_SNOW_WORD_4
-	CS	NOVÝ ROK!
+	CS	NOVY ROK!
 	DA	NYTÅR!
 	DE	NEUES JAHR!
 	EN	NEW YEAR !

@@ -71,6 +71,12 @@ sub initDetails {
 						elsif ($major == 6 && $minor == 3) {
 							$class->{osDetails}->{'osName'} = $producttype != 1 ? 'Windows 2012 Server R2' : 'Windows 8.1';
 						}
+						elsif ($major == 10 && $minor == 0 && $producttype != 1 && $build && $build >= 20348) {
+							$class->{osDetails}->{'osName'} = 'Windows 2022 Server';
+						}
+						elsif ($major == 10 && $minor == 0 && $build && $build >= 22000) {
+							$class->{osDetails}->{'osName'} = $producttype != 1 ? 'Windows 2022 Server' : 'Windows 11';
+						}
 						elsif ($major == 10 && $minor == 0) {
 							$class->{osDetails}->{'osName'} = $producttype != 1 ? 'Windows 2016 Server' : 'Windows 10';
 						}
@@ -192,7 +198,7 @@ sub dirsFor {
 
 		push @dirs, $::prefsdir || $class->writablePath('prefs');
 
-	} elsif ($dir =~ /^(?:music|playlists|videos|pictures)$/) {
+	} elsif ($dir =~ /^(?:music|playlists)$/) {
 
 		my $path;
 
@@ -237,14 +243,6 @@ sub dirsFor {
 		if ($dir =~ /^(?:music|playlists)$/) {
 			$path = Win32::GetFolderPath(Win32::CSIDL_MYMUSIC) unless $path;
 			$fallback = 'My Music';
-		}
-		elsif ($dir eq 'videos') {
-			$path = Win32::GetFolderPath(Win32::CSIDL_MYVIDEO) unless $path;
-			$fallback = 'My Videos';
-		}
-		elsif ($dir eq 'pictures') {
-			$path = Win32::GetFolderPath(Win32::CSIDL_MYPICTURES) unless $path;
-			$fallback = 'My Pictures';
 		}
 
 		# fall back if no path or invalid path is returned

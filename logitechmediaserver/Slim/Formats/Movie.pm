@@ -230,7 +230,15 @@ sub parseStream {
 			return 0;
 		}
 		
-		$offset += $args->{_need};
+		# if there is a stco, the first entry is the audio_offset
+		if ($args->{_atom} eq 'stco') {
+			$args->{_audio_offset} = unpack('N', substr($args->{_scanbuf}, $offset+16, 4));
+			main::DEBUGLOG && $log->is_debug && $log->debug("found audio offset with stco $args->{_audio_offset}");
+		}
+		
+		# need to dive into atoms to find optional stco
+		$offset += ($args->{_atom} !~ /^(moov|trak|mdia|minf|stbl)$/) ? $args->{_need} : 8;
+
 		main::DEBUGLOG && $log->is_debug && $log->debug("atom $args->{_atom} at $args->{_offset} of size $args->{_need}");
 		
 		# mdat reached = audio offset & size acquired
@@ -255,7 +263,7 @@ sub parseStream {
 		
 		# top 'moov' not found, need to seek beyond 'mdat'
 		$args->{_range} = $offset;
-		$args->{_scanbuf} = substr($args->{_scanbuf}, 0, $args->{_offset});
+		substr($args->{_scanbuf}, $args->{_offset}) = '';
 		delete $args->{_need};
 		return $offset;
 	} elsif ($args->{_atom} eq 'moov' && $len) {
@@ -263,7 +271,7 @@ sub parseStream {
 	}	
 	
 	# finally got it, add 'moov' size it if was last atom
-	$args->{_scanbuf} = substr($args->{_scanbuf}, 0, $args->{_offset} + ($args->{_atom} eq 'moov' ? $args->{_need} : 0));
+	substr($args->{_scanbuf}, $args->{_offset} + ($args->{_atom} eq 'moov' ? $args->{_need} : 0)) = '';
 	
 	# put at least 16 bytes after mdat or it confuses audio::scan (and header creation)
 	my $fh = File::Temp->new( DIR => Slim::Utils::Misc::getTempDir);
@@ -273,9 +281,9 @@ sub parseStream {
 	my $info = Audio::Scan->scan_fh( mp4 => $fh )->{info};
 	$info->{fh} = $fh;
 	
-	# the offset is *after* the mdat atom, make size consistent
-	$info->{audio_offset} = $args->{_mdat_} + 8;
-	$info->{audio_size} -= 8;
+	# audio offset from stco or mdat position, but audio_size needs adjustment
+	$info->{audio_offset} = $args->{_audio_offset} || ($args->{_mdat_} + 8);
+	$info->{audio_size} -= $info->{audio_offset} - $args->{_mdat_};
 	
 	# MPEG-4 audio = 64,  MPEG-4 ADTS main = 102, MPEG-4 ADTS Low Complexity = 103
 	# MPEG-4 ADTS Scalable Sampling Rate = 104	
@@ -367,7 +375,7 @@ sub extractADTS {
 	my @ADTSHeader = (0xFF,0xF1,0,0,0,0,0xFC);
 
 	$codec->{inbuf} .= substr($_[1], $offset);
-	$_[1] = substr($_[1], 0, $offset);
+	substr($_[1], $offset) = '';
 		
 	while ($codec->{frame_size} || $codec->{frame_index} < $codec->{entries}) {
 		my $frame_size = $codec->{frame_size} || $codec->{frames}->[$codec->{frame_index}];
@@ -384,7 +392,7 @@ sub extractADTS {
 		$consumed += $frame_size;
 	}	
 
-	$codec->{inbuf} = substr($codec->{inbuf}, $consumed);
+	substr($codec->{inbuf}, 0, $consumed, '');
 	return length $codec->{inbuf};
 }	
 	

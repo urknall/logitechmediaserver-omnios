@@ -43,6 +43,7 @@ my %tagMapping = (
 	'DISCNUMBER'                => 'DISC',
 	'DISCTOTAL'                 => 'DISCC',
 	'URL'                       => 'URLTAG',
+	'BPM'                       => 'BPM',
 	'MUSICBRAINZ_SORTNAME'      => 'ARTISTSORT',
 	'MUSICBRAINZ_ALBUMARTIST'   => 'ALBUMARTIST',
 	'MUSICBRAINZ_ALBUMARTISTID' => 'MUSICBRAINZ_ALBUMARTIST_ID',
@@ -249,6 +250,9 @@ sub _doTagMapping {
 
 		($tags->{YEAR} = $tags->{DATE}) =~ s/.*(\d\d\d\d).*/$1/;
 	}
+
+	# Sometimes the BPM is not an integer so we try to convert.
+	$tags->{BPM} = int($tags->{BPM}) if defined $tags->{BPM};
 }
 
 sub _addInfoTags {
@@ -1043,8 +1047,7 @@ sub frameAlign {
 	# just need to flush the buffer, make sure empty ourselves first
 	if ($context->{aligned}) {
 		if ($chunkSize < $length) {
-			$_[1] = substr($context->{inbuf}, 0, $length - $chunkSize - 1);
-			$context->{inbuf} = substr($context->{inbuf}, $length - $chunkSize - 1);
+			$_[1] = substr($context->{inbuf}, 0, $length - $chunkSize - 1, '');
 			return $chunkSize + 1;
 		}
 		else {
