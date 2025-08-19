@@ -1,12 +1,14 @@
 #!/bin/bash
 
 STAMP=`date '+%m-%d-%y--%H:%M'`
+WORKDIR="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
+
 
 GCCVERSION=gcc10
 GCCPATH=gcc-10
-LMSVERSION=8.3.0
-PERLVERSION=5.32.1
-NASMVERSION=2.15.05
+LMSVERSION=9.1.0
+PERLVERSION=5.36
+NASMVERSION=2.16.03
 YASMVERSION=1.3.0
 
 beadm create pre_lms_setup_$LMSVERSION-created-$STAMP
@@ -29,7 +31,7 @@ pkg install --deny-new-be rsync
 #gmake
 #gmake install
 
-#cd /root
+cd $WORKDIR
 
 wget http://www.nasm.us/pub/nasm/releasebuilds/$NASMVERSION/nasm-$NASMVERSION.tar.gz
 tar xvf nasm-$NASMVERSION.tar.gz
@@ -40,7 +42,7 @@ cd nasm-$NASMVERSION.src
 gmake
 gmake install
 
-cd /root
+cd $WORKDIR
 
 wget http://www.tortall.net/projects/yasm/releases/yasm-$YASMVERSION.tar.gz
 tar xvf yasm-$YASMVERSION.tar.gz
@@ -51,31 +53,34 @@ cd yasm-$YASMVERSION.src
 gmake
 gmake install
 
-cd /root
+cd $WORKDIR
 
 export PATH=/opt/gcc-$GCCPATH/bin:/opt/nasm-$NASMVERSION/bin:/opt/yasm-$YASMVERSION/bin:/usr/gnu/bin:$PATH
 
-git clone https://github.com/Logitech/slimserver.git slimserver.git
+git clone https://github.com/LMS-Community/slimserver slimserver.git
 cd slimserver.git
-mkdir /opt/logitechmediaserver
-cp -r * /opt/logitechmediaserver
+mkdir /opt/lyrionmusicserver
+cp -r * /opt/lyrionmusicserver
 
-cd /root
+cd $WORKDIR
 
-git clone https://github.com/Logitech/slimserver-vendor.git slimserver-vendor.git
+git clone https://github.com/LMS-Community/slimserver-vendor slimserver-vendor.git
 cd slimserver-vendor.git/CPAN
-#./buildme.sh -i /opt/logitechmediaserver -p /opt/perl-$PERLVERSION/bin/perl
-./buildme.sh -i /opt/logitechmediaserver 
+#./buildme.sh -i /opt/lyrionmusicserver -p /opt/perl-$PERLVERSION/bin/perl
+./buildme.sh -i /opt/lyrionmusicserver 
 
-cd /root
+cd $WORKDIR
 
 useradd -c 'lmsd' -d /var/empty -s /bin/false lmsd
 groupadd lmsd
-chown -R lmsd:lmsd /opt/logitechmediaserver
-chmod -R 755 /opt/logitechmediaserver
-mkdir /var/lib/logitechmediaserver
-chown lmsd:lmsd /var/lib/logitechmediaserver
-chmod 755 /var/lib/logitechmediaserver
+chown -R lmsd:lmsd /opt/lyrionmusicserver
+chmod -R 755 /opt/lyrionmusicserver
+mkdir /var/lib/squeezeboxserver
+chown lmsd:lmsd /var/lib/squeezeboxserver
+chmod 755 /var/lib/squeezeboxserver
+
+#svcadm disable lmsd
+#svccfg delete application/lmsd
 
 cp svc-lmsd /lib/svc/method
 chmod 555  /lib/svc/method/svc-lmsd
