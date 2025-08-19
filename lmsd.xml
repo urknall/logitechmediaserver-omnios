@@ -36,7 +36,7 @@
 		<property_group name='lmsd' type='application'>
                         <propval name='bindir' type='astring' value='/opt/lyrionmusicserver' /> 
 			<propval name='perlbin' type='astring' value='/usr/bin/perl' />
-                        <propval name='cachedir' type='astring' value='/var/lib/squeezeboxsserver/cache' />
+                        <propval name='cachedir' type='astring' value='/var/lib/squeezeboxserver/cache' />
 			<propval name='prefsdir' type='astring' value='/var/lib/squeezeboxserver/prefs' />
 			<propval name='logdir' type='astring' value='/var/lib/squeezeboxserver/logs' />
                         <propval name='transcoding' type='boolean' value='true' />
