@@ -2,7 +2,7 @@
 <!DOCTYPE service_bundle SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
 <!--
 
-	Service manifest for Logitech Media Server
+	Service manifest for Lyrion Music Server
 
 -->
 
@@ -34,21 +34,19 @@
 		<exec_method type='method' name='refresh' exec='/lib/svc/method/svc-lmsd refresh' timeout_seconds='60' />
 
 		<property_group name='lmsd' type='application'>
-                        <propval name='bindir' type='astring' value='/opt/logitechmediaserver' /> 
+                        <propval name='bindir' type='astring' value='/opt/lyrionmusicserver' /> 
 			<propval name='perlbin' type='astring' value='/usr/bin/perl' />
-                        <propval name='cachedir' type='astring' value='/var/lib/logitechmediaserver/cache' />
-			<propval name='prefsdir' type='astring' value='/var/lib/logitechmediaserver/prefs' />
-			<propval name='logdir' type='astring' value='/var/lib/logitechmediaserver/logs' />
+                        <propval name='cachedir' type='astring' value='/var/lib/squeezeboxsserver/cache' />
+			<propval name='prefsdir' type='astring' value='/var/lib/squeezeboxserver/prefs' />
+			<propval name='logdir' type='astring' value='/var/lib/squeezeboxserver/logs' />
                         <propval name='transcoding' type='boolean' value='true' />
                         <propval name='sb1slimp3sync' type='boolean' value='true' />
-			<propval name='mysqueezebox' type='boolean' value='true' />
                         <propval name='infolog' type='boolean' value='true' />
                         <propval name='debuglog' type='boolean' value='false' />
                         <propval name='webgui' type='boolean' value='true' />
 			<propval name='perfmon' type='boolean' value='false' />
 			<propval name='diag' type='boolean' value='false' />
-			<propval name='image' type='boolean' value='true' />
-			<propval name='video' type='boolean' value='true' />
+			<propval name='statistics' type='boolean' value='true' />
 			<propval name='httpaddr' type='astring' value='0.0.0.0' />
 			<propval name='httpport' type='astring' value='9000' />
 			<propval name='cliaddr' type='astring' value='0.0.0.0' />
@@ -66,10 +64,10 @@
 		
 		<template>
               		<common_name>
-				<loctext xml:lang='C'>Logitech Media Server</loctext>
+				<loctext xml:lang='C'>Lyrion Music Server</loctext>
                		</common_name>
                 	<documentation>
-                       		<doc_link name='SlimDevices Home' uri='http://www.slimdevices.com/'/>
+                       		<doc_link name='Lyrion Music Server' uri='https://lyrion.org/'/>
                		</documentation>
         	</template>
 	</service>

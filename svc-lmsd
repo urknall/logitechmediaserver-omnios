@@ -17,10 +17,10 @@ PREFSDIR=`getproparg lmsd/prefsdir`
 LOGDIR=`getproparg lmsd/logdir`
 TRANSCODING=`getproparg lmsd/transcoding`
 SB1SLIMP3SYNC=`getproparg lmsd/sb1slimp3sync`
-MYSQUEEZEBOX=`getproparg lmsd/mysqueezebox`
 INFOLOG=`getproparg lmsd/infolog`
 DEBUGLOG=`getproparg lmsd/debuglog`
 WEBGUI=`getproparg lmsd/webgui`
+STATISTICS=`getproparg lmsd/statistics`
 PERFMON=`getproparg lmsd/perfmon`
 DIAG=`getproparg lmsd/diag`
 HTTPPORT=`getproparg lmsd/httpport`
@@ -29,8 +29,6 @@ CLIPORT=`getproparg lmsd/cliport`
 CLIADDR=`getproparg lmsd/cliaddr`
 PLAYERADDR=`getproparg lmsd/playeraddr`
 STREAMADDR=`getproparg lmsd/streamaddr`
-IMAGE=`getproparg lmsd/image`
-VIDEO=`getproparg lmsd/video`
 DBTYPE=`getproparg lmsd/dbtype`
 CHARSET=`getproparg lmsd/charset`
 CTYPE=`getproparg lmsd/lctype`
@@ -58,10 +56,6 @@ if [ "${SB1SLIMP3SYNC}" == "false" ]; then
         ARGS="${ARGS} --nosb1slimp3sync"
 fi
 
-if [ "${MYSQUEEZEBOX}" == "false" ]; then
-	ARGS="${ARGS} --nomysqueezebox"
-fi
-
 if [ "${INFOLOG}" == "false" ]; then
         ARGS="${ARGS} --noinfolog"
 fi
@@ -82,12 +76,8 @@ if [ "${DIAG}" == "true" ]; then
         ARGS="${ARGS} --diag"
 fi
 
-if [ "${IMAGE}" == "false" ]; then
-        ARGS="${ARGS} --noimage"
-fi
-
-if [ "${VIDEO}" == "false" ]; then
-        ARGS="${ARGS} --noimage"
+if [ "${STATISTICS}" == "false" ]; then
+        ARGS="${ARGS} --nostatistics"
 fi
 
 if ! [ "${HTTPADDR}" == "0.0.0.0" ]; then
