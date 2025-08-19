@@ -1,0 +1,275 @@
+[% PROCESS settings/header.html %]
+
+[% SET numberOfRoleCols = 3 %]
+
+	[% WRAPPER settingSection %]
+		[% WRAPPER settingGroup title="SETUP_ARTISTS_BROWSE_MODES" desc="SETUP_ARTISTS_BROWSE_MODES_DESC" %]
+			<select class="stdedit" name="pref_useUnifiedArtistsList" id="useUnifiedArtistsList">[% prefs.pref_useUnifiedArtistsList %]
+
+				<option [% IF prefs.pref_useUnifiedArtistsList %]selected [% END %]value="1">[% 'SETUP_ARTISTS_BROWSE_MODES_UNIFIED_ON' | string %]</option>
+				<option [% IF NOT prefs.pref_useUnifiedArtistsList%]selected [% END %]value="0">[% 'SETUP_ARTISTS_BROWSE_MODES_UNIFIED_OFF' | string %]</option>
+
+			</select>
+		[% END %]
+	[% END %]
+
+	[% IF prefs.pref_useUnifiedArtistsList || userRoleCount %]
+		[% WRAPPER settingSection %]
+			[% WRAPPER settingGroup title="SETUP_ROLESINARTISTS" desc="SETUP_ROLESINARTISTS_DESC" %]
+			<table>
+				<tr>
+				[% SET counter = 0 %]
+				[% FOREACH role = menuRoles %]
+					[% IF !role.hidden %]
+						[% SET counter = counter + 1 %]
+						<td><input type="checkbox" [% IF role.selected %]checked="1" [% END %] class="stdedit" name="pref_[% role.name %]InArtists" id="[% role.name %]InArtists" value="1" />
+						<label for="[% role.name %]InArtists" class="stdlabel">[% role.name | string %]</label></td>
+						<td />
+						[% IF counter % numberOfRoleCols == 0 %] </tr><tr> [% END %]
+					[% ELSE %]
+						<input type="hidden" name="pref_[% role.name %]InArtists" value="[% role.selected | html %]" />
+					[% END %]
+				[% END %]
+				</tr>
+			</table>
+			[% END %]
+		[% END %]
+	[% ELSE %]
+		[% FOREACH role = menuRoles %]
+			<input type="hidden" name="pref_[% role.name %]InArtists" value="[% role.selected | html %]" />
+		[% END %]
+	[% END %]
+
+	[% WRAPPER settingSection %]
+		[% WRAPPER settingGroup title="SETUP_ALBUMLINKROLES" desc="SETUP_ALBUMLINKROLES_DESC" %]
+			<table>
+				<tr>
+				[% SET counter = 0 %]
+				[% FOREACH role = linkRoles %]
+					[% SET counter = counter + 1 %]
+					<td><input type="checkbox" [% IF role.selected %]checked="1" [% END %] class="stdedit" name="pref_[% role.name %]AlbumLink" id="[% role.name %]AlbumLink" value="1" />
+					<label for="[% role.name %]AlbumLink" class="stdlabel">[% role.name | string %]</label></td>
+					<td />
+					[% IF counter % numberOfRoleCols == 0 %] </tr><tr> [% END %]
+				[% END %]
+				</tr>
+			</table>
+		[% END %]
+	[% END %]
+
+	[% WRAPPER settingSection %]
+		[% WRAPPER settingGroup title="SETUP_USERDEFINEDROLES" desc="SETUP_USERDEFINEDROLES_DESC" %]
+			<table>
+				<tr>
+					<th>[% "SETUP_USERDEFINEDROLES_TAG" | string %]</th>
+					<th>[% "SETUP_USERDEFINEDROLES_TEXT" | string %]</th>
+					<th>[% "SETUP_USERDEFINEDROLES_TEXT_PLURAL" | string %]</th>
+				</tr>
+				[% FOREACH tag = customTags.keys.sort %]
+					<tr>
+						<td><input type="text" name="[% tag | html %]_tag" value="[% tag | html %]" class="stdedit"/></td>
+						<td><input type="text" name="[% tag | html %]_name" value="[% customTags.$tag.name | html %]" class="stdedit" style="width: 200px;"/></td>
+						<td><input type="text" name="[% tag | html %]_namePlural" value="[% customTags.$tag.namePlural | html %]" class="stdedit" style="width: 200px;"/></td>
+					</tr>
+				[% END %]
+				<tr>
+					<td><input type="text" name="new_tag" value="" class="stdedit"/></td>
+					<td><input type="text" name="new_name" value="" class="stdedit" style="width: 200px;"/></td>
+					<td><input type="text" name="new_namePlural" value="" class="stdedit" style="width: 200px;"/></td>
+				</tr>
+			</table>
+		[% END %]
+	[% END %]
+
+	[% WRAPPER settingSection %]
+		[% IF prefs.pref_useUnifiedArtistsList %]
+			[% WRAPPER settingGroup title="SETUP_VARIOUSARTISTS" desc="SETUP_VARIOUSARTISTAUTOIDENTIFICATION_DESC"%]
+				<input type="radio" name="pref_variousArtistAutoIdentification" id="pref_variousArtistAutoIdentification0" value="0" [% IF NOT prefs.pref_variousArtistAutoIdentification %]checked="checked"[% END %] />
+				<label for="pref_variousArtistAutoIdentification0" class="stdlabel">[% 'SETUP_VARIOUSARTISTAUTOIDENTIFICATION_0' | getstring %]</label><br/>
+				<input type="radio" name="pref_variousArtistAutoIdentification" id="pref_variousArtistAutoIdentification1" value="1" [% IF prefs.pref_variousArtistAutoIdentification %]checked="checked"[% END %] />
+				<label for="pref_variousArtistAutoIdentification1" class="stdlabel">[% 'SETUP_VARIOUSARTISTAUTOIDENTIFICATION_1' | getstring %]</label>
+			[% END %]
+		[% ELSE %]
+			<input type="hidden" name="pref_variousArtistAutoIdentification" value="[% prefs.pref_variousArtistAutoIdentification | html %]" />
+		[% END %]
+
+		[% WRAPPER settingGroup title= prefs.pref_useUnifiedArtistsList ? "" : "SETUP_VARIOUSARTISTS"; desc=""%]
+			<div class="prefDesc">[% "SETUP_VARIOUSARTISTSSTRING_DESC" | string %]</div>
+			<input type="text"class="stdedit" name="pref_variousArtistsString" id="variousArtistsString" value="[% prefs.pref_variousArtistsString | html %]" size="40" placeholder="[% "VARIOUSARTISTS" | string | html %]">
+		[% END %]
+
+		[% WRAPPER settingGroup title="MP3" desc="SETUP_USETPE2ASALBUMARTIST_DESC"%]
+			<input type="radio" name="pref_useTPE2AsAlbumArtist" id="pref_useTPE2AsAlbumArtist0" value="0" [% IF NOT prefs.pref_useTPE2AsAlbumArtist %]checked="checked"[% END %] />
+			<label for="pref_useTPE2AsAlbumArtist0" class="stdlabel">[% 'SETUP_USETPE2ASALBUMARTIST_0' | getstring %]</label><br/>
+			<input type="radio" name="pref_useTPE2AsAlbumArtist" id="pref_useTPE2AsAlbumArtist1" value="1" [% IF prefs.pref_useTPE2AsAlbumArtist %]checked="checked"[% END %] />
+			<label for="pref_useTPE2AsAlbumArtist1" class="stdlabel">[% 'SETUP_USETPE2ASALBUMARTIST_1' | getstring %]</label><br/>
+		[% END %]
+
+		[% WRAPPER settingGroup title="SETUP_MYCLASSICALGENRES" desc="SETUP_MYCLASSICALGENRES_DESC" %]
+			<input type="text" class="stdedit" name="pref_myClassicalGenres" id="myClassicalGenres" value="[% prefs.pref_myClassicalGenres | html %]" size="40" placeholder="[% "GENRES" | string | html %]"><br/>
+		[% END %]
+
+		[% WRAPPER settingGroup title="SETUP_WORKSSCAN" desc="" %]
+			<input type="radio" name="pref_worksScan" id="pref_worksScan0" value="0" [% IF prefs.pref_worksScan == 0 %]checked="checked"[% END %] />
+			<label for="pref_worksScan0" class="stdlabel">[% 'SETUP_WORKSSCAN_0' | getstring %]</label><br/>
+			<input type="radio" name="pref_worksScan" id="pref_worksScan1" value="1" [% IF prefs.pref_worksScan == 1 %]checked="checked"[% END %] />
+			<label for="pref_worksScan1" class="stdlabel">[% 'SETUP_WORKSSCAN_1' | getstring %]</label><br/>
+			<input type="radio" name="pref_worksScan" id="pref_worksScan2" value="2" [% IF prefs.pref_worksScan == 2 %]checked="checked"[% END %] />
+			<label for="pref_worksScan2" class="stdlabel">[% 'SETUP_WORKSSCAN_2' | getstring %]</label><br/>
+		[% END %]
+	[% END %]
+
+	[% WRAPPER settingSection %]
+		[% WRAPPER settingGroup title="SETUP_RELEASE_TYPES" desc=""%]
+			<select class="stdedit" name="pref_ignoreReleaseTypes" id="ignoreReleaseTypes">
+				<option [% IF NOT prefs.pref_ignoreReleaseTypes %]selected [% END %]value="0">[% 'SETUP_IGNORE_RELEASE_TYPES_0' | string %]</option>
+				<option [% IF prefs.pref_ignoreReleaseTypes %]selected [% END %]value="1">[% 'SETUP_IGNORE_RELEASE_TYPES_1' | string %]</option>
+			</select>
+		[% END %]
+
+		[% IF !prefs.pref_ignoreReleaseTypes; WRAPPER settingGroup title="" desc="" %]
+			<input type="checkbox" [% IF prefs.pref_cleanupReleaseTypes %]checked="1"[% END %] class="stdedit" name="pref_cleanupReleaseTypes" id="pref_cleanupReleaseTypes" value="1" />
+			<label for="pref_cleanupReleaseTypes" class="stdlabel">[% "SETUP_CLEANUP_RELEASE_TYPES" | string %]</label>
+		[% END; ELSE %]
+			<input type="hidden" name="pref_cleanupReleaseTypes" value="[% IF prefs.pref_cleanupReleaseTypes %]1[% END %]">
+		[% END %]
+
+		[% IF !prefs.pref_ignoreReleaseTypes; WRAPPER settingGroup title="" desc="" %]
+			<select class="stdedit" name="pref_groupArtistAlbumsByReleaseType" id="groupArtistAlbumsByReleaseType">
+				<option [% IF prefs.pref_groupArtistAlbumsByReleaseType == 1 %]selected [% END %]value="1">[% 'SETUP_GROUP_BY_RELEASE_TYPES_1' | string %]</option>
+				<option [% IF prefs.pref_groupArtistAlbumsByReleaseType == 2 %]selected [% END %]value="2">[% 'SETUP_GROUP_BY_RELEASE_TYPES_2' | string %]</option>
+				<option [% IF NOT prefs.pref_groupArtistAlbumsByReleaseType %]selected [% END %]value="0">[% 'SETUP_GROUP_BY_RELEASE_TYPES_0' | string %]</option>
+			</select>
+		[% END; ELSE %]
+			<input type="hidden" name="pref_groupArtistAlbumsByReleaseType" value="[% IF prefs.pref_groupArtistAlbumsByReleaseType %]1[% END %]">
+			<input type="hidden" name="pref_cleanupReleaseTypes" value="[% IF prefs.pref_cleanupReleaseTypes %]1[% END %]">
+		[% END %]
+	[% END %]
+
+	[% IF !prefs.pref_ignoreReleaseTypes AND NOT prefs.pref_groupArtistAlbumsByReleaseType; WRAPPER setting title="SETUP_RELEASE_TYPES_INCLUDE" desc="SETUP_RELEASE_TYPES_DESC"%]
+		[% FOREACH releaseType IN release_types %]
+			<input type="checkbox" [% IF NOT releaseType.ignore %]checked="1"[% END %] class="stdedit" name="release_type_[% releaseType.id %]" id="release_type_[% releaseType.id %]" value="1" />
+			<label for="release_type_[% releaseType.id %]" class="stdlabel">[% releaseType.title %]</label>[% IF loop.last; ""; ELSE; "<br/>"; END %]
+		[% END %]
+	[% END; ELSE %]
+		[% FOREACH releaseType IN release_types %]
+			<input type="hidden" name="release_type_[% releaseType.id %]" value="[% IF NOT releaseType.ignore %]1[% END %]" />
+		[% END %]
+	[% END %]
+
+	[% WRAPPER settingSection %]
+		[% IF !prefs.pref_ignoreReleaseTypes AND prefs.pref_groupArtistAlbumsByReleaseType; WRAPPER settingGroup title="SETUP_RELEASE_TYPES_COMPOSER_ALBUM_GROUP_OPTIONS" desc="SETUP_RELEASE_TYPES_COMPOSER_ALBUM_GROUP_OPTIONS_DESC" %]
+			<input type="radio" name="pref_showComposerReleasesbyAlbum" id="pref_showComposerReleasesbyAlbum0" value="0" [% IF NOT prefs.pref_showComposerReleasesbyAlbum %]checked="checked"[% END %] />
+			<label for="pref_showComposerReleasesbyAlbum0" class="stdlabel">[% 'SETUP_RELEASE_TYPES_COMPOSER_ROLE_GROUPING_0' | getstring %]</label><br/>
+			<input type="radio" name="pref_showComposerReleasesbyAlbum" id="pref_showComposerReleasesbyAlbum1" value="1" [% IF prefs.pref_showComposerReleasesbyAlbum == 1 %]checked="checked"[% END %] />
+			<label for="pref_showComposerReleasesbyAlbum1" class="stdlabel">[% 'SETUP_RELEASE_TYPES_COMPOSER_ROLE_GROUPING_1' | getstring %]</label><br/>
+			<input type="radio" name="pref_showComposerReleasesbyAlbum" id="pref_showComposerReleasesbyAlbum2" value="2" [% IF prefs.pref_showComposerReleasesbyAlbum == 2 %]checked="checked"[% END %] />
+			<label for="pref_showComposerReleasesbyAlbum2" class="stdlabel">[% 'SETUP_RELEASE_TYPES_COMPOSER_ROLE_GROUPING_2' | getstring %]</label>
+		[% END; ELSE %]
+			<input type="hidden" name="pref_showComposerReleasesbyAlbum" value="[% prefs.pref_showComposerReleasesbyAlbum %]" />
+		[% END %]
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_NOGENREFILTER" desc="SETUP_NOGENREFILTER_DESC"%]
+		<select class="stdedit" name="pref_noGenreFilter" id="noGenreFilter">
+
+			<option [% IF NOT prefs.pref_noGenreFilter %]selected [% END %]value="0">[% 'SETUP_NOGENREFILTER_0' | string %]</option>
+			<option [% IF prefs.pref_noGenreFilter %]selected [% END %]value="1">[% 'SETUP_NOGENREFILTER_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_NOROLEFILTER" desc="SETUP_NOROLEFILTER_DESC"%]
+		<select class="stdedit" name="pref_noRoleFilter" id="noRoleFilter">
+
+			<option [% IF NOT prefs.pref_noRoleFilter %]selected [% END %]value="0">[% 'SETUP_NOROLEFILTER_0' | string %]</option>
+			<option [% IF prefs.pref_noRoleFilter %]selected [% END %]value="1">[% 'SETUP_NOROLEFILTER_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_YEARMENU" desc="SETUP_YEARMENU_DESC"%]
+		<select class="stdedit" name="pref_onlyAlbumYears" id="onlyAlbumYears">
+
+			<option [% IF prefs.pref_onlyAlbumYears %]selected [% END %]value="1">[% 'SETUP_YEARMENU_0' | string %]</option>
+			<option [% IF NOT prefs.pref_onlyAlbumYears %]selected [% END %]value="0">[% 'SETUP_YEARMENU_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_SEARCHSUBSTRING" desc="SETUP_SEARCHSUBSTRING_DESC"%]
+		<select class="stdedit" name="pref_searchSubString" id="searchSubString" [% IF usesFTS %]disabled="true"[% END %]>
+
+			<option [% IF NOT prefs.pref_searchSubString %]selected [% END %]value="0">[% 'SETUP_SEARCHSUBSTRING_0' | string %]</option>
+			<option [% IF prefs.pref_searchSubString %]selected [% END %]value="1">[% 'SETUP_SEARCHSUBSTRING_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_IGNOREDARTICLES" desc="SETUP_IGNOREDARTICLES_DESC"%]
+		<input type="text"class="stdedit" name="pref_ignoredarticles" id="ignoredarticles" value="[% prefs.pref_ignoredarticles | html %]" size="40">
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_SPLITLIST" desc="SETUP_SPLITLIST_DESC"%]
+			<input type="text"class="stdedit" name="pref_splitList" id="splitList" value="[% prefs.pref_splitList | html %]" size="40">
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_BROWSEAGELIMIT" desc="SETUP_BROWSEAGELIMIT_DESC"%]
+			<input type="text"class="stdedit" name="pref_browseagelimit" id="browseagelimit" value="[% prefs.pref_browseagelimit || 0 %]" size="15">
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_GROUPDISCS" desc="SETUP_GROUPDISCS_DESC"%]
+		<select class="stdedit" name="pref_groupdiscs" id="groupdiscs">
+
+			<option [% IF NOT prefs.pref_groupdiscs %]selected [% END %]value="0">[% 'SETUP_GROUPDISCS_0' | string %]</option>
+			<option [% IF prefs.pref_groupdiscs %]selected [% END %]value="1">[% 'SETUP_GROUPDISCS_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_PERSISTPLAYLISTS" desc="SETUP_PERSISTPLAYLISTS_DESC"%]
+		<select class="stdedit" name="pref_persistPlaylists" id="persistPlaylists">
+
+			<option [% IF NOT prefs.pref_persistPlaylists %]selected [% END %]value="0">[% 'SETUP_PERSISTPLAYLISTS_0' | string %]</option>
+			<option [% IF prefs.pref_persistPlaylists %]selected [% END %]value="1">[% 'SETUP_PERSISTPLAYLISTS_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_RESHUFFLEONREPEAT" desc="SETUP_RESHUFFLEONREPEAT_DESC"%]
+		<select class="stdedit" name="pref_reshuffleOnRepeat" id="reshuffleOnRepeat">
+
+			<option [% IF NOT prefs.pref_reshuffleOnRepeat %]selected [% END %]value="0">[% 'SETUP_RESHUFFLEONREPEAT_0' | string %]</option>
+			<option [% IF prefs.pref_reshuffleOnRepeat %]selected [% END %]value="1">[% 'SETUP_RESHUFFLEONREPEAT_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_SAVESHUFFLED" desc="SETUP_SAVESHUFFLED_DESC"%]
+		<select class="stdedit" name="pref_saveShuffled" id="saveShuffled">
+
+			<option [% IF NOT prefs.pref_saveShuffled %]selected [% END %]value="0">[% 'SETUP_SAVESHUFFLED_0' | string %]</option>
+			<option [% IF prefs.pref_saveShuffled %]selected [% END %]value="1">[% 'SETUP_SAVESHUFFLED_1' | string %]</option>
+
+		</select>
+	[% END %]
+
+	[%# Only display this setting if there is more than 1 rating implementation installed %]
+	[% IF ratingImplementations.size > 1 %]
+		[% WRAPPER setting title="SETUP_RATINGIMPLEMENTATION" desc="SETUP_RATINGIMPLEMENTATION_DESC" %]
+			<select class="stdedit" name="ratingImplementation" id="ratingImplementation">
+
+			[% FOREACH option IN ratingImplementations %]
+				<option [% IF prefs.ratingImplementation == option %]selected [% END %]value="[% option | html %]">[% option |string %]</option>
+			[%- END -%]
+
+			</select>
+		[% END %]
+	[% END %]
+
+	[% WRAPPER setting title="SETUP_SKIPSENTINEL" desc="SETUP_SKIPSENTINEL_DESC" %]
+		<input type="text" class="stdedit" name="pref_skipsentinel" id="skipsentinel" value="[% prefs.pref_skipsentinel | html %]" size="40">
+	[% END %]
+
+[% PROCESS settings/footer.html %]
+

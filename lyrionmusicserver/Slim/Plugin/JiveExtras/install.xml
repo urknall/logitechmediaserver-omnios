@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<extension>
+	<name>PLUGIN_JIVEEXTRAS</name>
+	<module>Slim::Plugin::JiveExtras::Plugin</module>
+	<version>1.0</version>
+	<description>PLUGIN_JIVEEXTRAS_DESC</description>
+	<creator>Lyrion Community</creator>
+	<category>tools</category>
+	<defaultState>disabled</defaultState>
+	<optionsURL>plugins/JiveExtras/settings/basic.html</optionsURL>
+	<targetApplication>
+		<id>Lyrion Music Server</id>
+		<minVersion>7.0a</minVersion>
+		<maxVersion>*</maxVersion>
+	</targetApplication>
+</extension>

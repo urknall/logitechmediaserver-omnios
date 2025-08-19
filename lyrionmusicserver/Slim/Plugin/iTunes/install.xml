@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<extension>
+	<name>ITUNES</name>
+	<module>Slim::Plugin::iTunes::Plugin</module>
+	<importmodule>Slim::Plugin::iTunes::Importer</importmodule>
+	<version>1.0</version>
+	<description>ITUNES_DESC</description>
+	<creator>Lyrion Community</creator>
+	<category>information</category>
+
+	<defaultState>disabled</defaultState>
+
+	<optionsURL>plugins/iTunes/settings/itunes.html</optionsURL>
+	<targetApplication>
+		<id>Lyrion Music Server</id>
+		<minVersion>7.0a</minVersion>
+		<maxVersion>*</maxVersion>
+	</targetApplication>
+</extension>
